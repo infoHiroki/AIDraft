@@ -6,7 +6,7 @@ class DentalSeminarProcessor {
     const sheet = SheetService.getSheet(config.SHEET_ID, config.SHEET_NAME);
     
     // ヘッダー追加（初回のみ）
-    SheetService.addHeaderIfNeeded(sheet, 8, '処理詳細');
+    SheetService.addHeaderIfNeeded(sheet, 8, 'AI回答');
     
     const data = sheet.getDataRange().getValues();
     let processedCount = 0;
@@ -69,7 +69,7 @@ class DentalSeminarProcessor {
     const sheet = SheetService.getSheet(config.SHEET_ID, config.SHEET_NAME);
     
     // ヘッダー追加
-    SheetService.addHeaderIfNeeded(sheet, 8, '処理詳細');
+    SheetService.addHeaderIfNeeded(sheet, 8, 'AI回答');
     
     const data = sheet.getDataRange().getValues();
     let processedCount = 0;

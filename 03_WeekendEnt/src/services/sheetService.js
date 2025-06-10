@@ -49,7 +49,7 @@ class SheetService {
   
   static addHeaderIfNeeded(sheet, columnIndex, headerText) {
     try {
-      const headerCell = sheet.getRange(1, columnIndex);
+      const headerCell = sheet.getRange(2, columnIndex);
       if (!headerCell.getValue() || headerCell.getValue() !== headerText) {
         headerCell.setValue(headerText);
       }

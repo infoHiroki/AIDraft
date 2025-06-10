@@ -38,9 +38,9 @@ function checkConfig() {
     
     // Gmail権限確認
     try {
-      const labels = Gmail.Users.Labels.list('me');
+      const labels = GmailApp.getUserLabels();
       console.log('Gmail権限:', 'OK');
-      console.log('利用可能ラベル数:', labels.labels.length);
+      console.log('利用可能ラベル数:', labels.length);
     } catch (error) {
       console.log('Gmail権限:', 'エラー -', error.message);
     }

@@ -28,8 +28,16 @@ testSingleRow(); // テスト実行で動作確認
    - "AI自動回答_お問い合わせ"
    - "AI自動回答_単発"  
    - "AI自動回答_WeekendEnt"
+   - "AI自動回答_Gmail"
 3. **下書き内容を確認・編集**
 4. **送信**
+
+### 04_Gmailラベル手動処理
+1. **処理したいメールに手動でラベル付け**
+   - ラベル名: "AI回答要求"
+2. **自動処理を待つ（1時間ごと）**
+   - または手動で `processLabeledEmails()` 実行
+3. **下書きが作成されたら確認・送信**
 
 ### 処理状況の確認
 **スプレッドシートで確認**
@@ -52,16 +60,19 @@ setupTrigger();
 - **01_お問い合わせ**: 問い合わせ自動返信システム
 - **02_単発**: 単発アンケート自動回答システム  
 - **03_WeekendEnt**: WeekendEnt自動回答システム
+- **04_Gmailラベル自動回答**: Gmail手動ラベルによるAI下書き作成システム
 
 ### 重要な関数
 | 関数 | 用途 |
 |---|---|
 | `setupTrigger()` | 自動実行開始 |
 | `deleteTriggers()` | 自動実行停止 |
-| `testSingleRow()` | 動作テスト |
+| `testSingleRow()` | 動作テスト（01～03用） |
+| `testSingleEmail()` | 動作テスト（04用） |
 | `processInquiries()` | 手動一括処理（01用） |
 | `processTanbatsu()` | 手動一括処理（02用） |
 | `processWeekendEnt()` | 手動一括処理（03用） |
+| `processLabeledEmails()` | 手動一括処理（04用） |
 
 ## 🚨 トラブル時の対応
 

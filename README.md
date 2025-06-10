@@ -17,17 +17,17 @@ AIDraft/
 
 ### 01_お問い合わせ
 - **対象**: GDX歯科セミナーの問い合わせ
-- **状態**: ✅ 開発完了・納品済み
+- **状態**: ✅ 開発完了・デプロイ済み
 - **GAS URL**: https://script.google.com/d/1PZ0xVB7FtEHQhyTq3GdbuN3SBBmTcXr66NCk7VVe3QJh2F2Ko_KIeN-1/edit
 
 ### 02_単発
 - **対象**: 単発セミナーのアンケート質問回答
-- **状態**: ✅ 開発完了
+- **状態**: ✅ 開発完了・デプロイ済み
 - **GAS URL**: https://script.google.com/d/1bZ2WeL_7bbrYErTThJqfqSvcdBzigbIKEATNdMYUcauUiRpVl9auz3Gz/edit
 
 ### 03_WeekendEnt
 - **対象**: WeekendEntセミナーのアンケート質問回答
-- **状態**: ✅ 開発完了
+- **状態**: ✅ 開発完了・デプロイ済み
 - **GAS URL**: https://script.google.com/d/1JzZSAiEYQh2R_uFfxmqdBbDDrbDlfyXpdawh7fTwDaLaJFLap1o0gHul/edit
 
 ## 技術仕様

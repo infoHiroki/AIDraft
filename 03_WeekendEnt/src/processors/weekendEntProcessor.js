@@ -11,7 +11,7 @@ class WeekendEntProcessor {
     const data = sheet.getDataRange().getValues();
     let processedCount = 0;
     
-    for (let i = 1; i < data.length && processedCount < config.MAX_ROWS_PER_RUN; i++) {
+    for (let i = 2; i < data.length && processedCount < config.MAX_ROWS_PER_RUN; i++) {
       const row = data[i];
       
       // G列（質問）があり、H列（事務局対応）が空なら未処理
@@ -84,7 +84,7 @@ class WeekendEntProcessor {
     const data = sheet.getDataRange().getValues();
     let processedCount = 0;
     
-    for (let i = 1; i < data.length; i++) {
+    for (let i = 2; i < data.length; i++) {
       const row = data[i];
       
       if (row[config.COLUMNS.QUESTION] && 

@@ -2,8 +2,8 @@
 const SHEET_CONFIGS = {
   // WeekendEntシート
   WEEKEND_ENT: {
-    SHEET_ID: '13-tj5YmUov8m3PbVvRO2XFCzMKb3YGJT4TG0tPz_rfo',
-    SHEET_NAME: 'WeekendEnt',
+    SHEET_ID: '1PPwXbBGdSLIC8yeQY33dNDlEqjdJ4X-PibaDPiWU6Io',
+    SHEET_NAME: 'WeekenDent',
     COLUMNS: {
       CONTENT: 0,         // A列: 内容
       TIMESTAMP: 1,       // B列: タイムスタンプ

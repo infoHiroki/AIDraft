@@ -2,7 +2,7 @@
 const SHEET_CONFIGS = {
   // 歯科セミナー問い合わせ
   DENTAL_SEMINAR: {
-    SHEET_ID: '18Z9j_eX7Ja6Esa32m9lZiQyzDlp4HxSkPnZhIcC5KEY',
+    SHEET_ID: '159ftLgPcrqdQU-W5UqpPcgrrZGado12kocXGFVnhzXI',
     SHEET_NAME: 'フォームの回答 1',
     COLUMNS: {
       TIMESTAMP: 0,      // A列: タイムスタンプ

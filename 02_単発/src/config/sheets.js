@@ -2,7 +2,7 @@
 const SHEET_CONFIGS = {
   // 単発シート
   TANBATSU: {
-    SHEET_ID: '13-tj5YmUov8m3PbVvRO2XFCzMKb3YGJT4TG0tPz_rfo',
+    SHEET_ID: '1PPwXbBGdSLIC8yeQY33dNDlEqjdJ4X-PibaDPiWU6Io',
     SHEET_NAME: '単発',
     COLUMNS: {
       TIMESTAMP: 0,       // A列: タイムスタンプ

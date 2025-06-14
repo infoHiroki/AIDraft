@@ -20,7 +20,6 @@ function testTanbatsuSingleRow() {
   }
 }
 
-
 // トリガー設定
 function setupTrigger() {
   // 既存のトリガーを削除

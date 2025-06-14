@@ -33,7 +33,7 @@ clasp create --title "AIDraft-お問い合わせ" --type standalone
 clasp push
 ```
 
-#### 📊 02_単発
+#### 📊 02_単発（動的列検索機能付き）
 ```bash
 cd "../02_単発"
 mv .clasp.json .clasp.json.old

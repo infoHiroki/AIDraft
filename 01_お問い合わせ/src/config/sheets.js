@@ -17,7 +17,7 @@ const SHEET_CONFIGS = {
       AI_RESPONSE: 9     // J列: AI返信文
     },
     MAX_ROWS_PER_RUN: 20,
-    LABEL_NAME: 'AI自動下書き_歯科セミナー'
+    LABEL_NAME: 'AI自動回答_お問い合わせ'
   },
   
   // WeekendEnアンケート（後で追加）

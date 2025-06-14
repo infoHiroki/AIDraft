@@ -26,30 +26,34 @@ clasp login
 
 #### 📝 01_お問い合わせ
 ```bash
-cd 01_お問い合わせ
-clasp create --title "AIDraft-お問い合わせ"
+cd "01_お問い合わせ"
+# 既存プロジェクトがある場合は.clasp.jsonをバックアップ
+mv .clasp.json .clasp.json.old
+clasp create --title "AIDraft-お問い合わせ" --type standalone
 clasp push
 ```
 
 #### 📊 02_単発
 ```bash
-cd ../02_単発
-clasp create --title "AIDraft-単発"
+cd "../02_単発"
+mv .clasp.json .clasp.json.old
+clasp create --title "AIDraft-単発" --type standalone
 clasp push
 ```
 
-#### 📈 03_WeekendEnt
+#### 📈 03_WeekendEnt（動的列検索機能付き）
 ```bash
-cd ../03_WeekendEnt
-clasp create --title "AIDraft-WeekendEnt"
+cd "../03_WeekendEnt"
+mv .clasp.json .clasp.json.old
+clasp create --title "AIDraft-WeekendEnt" --type standalone
 clasp push
 ```
 
-#### 📧 04_Gmailラベル自動回答
+#### 📧 04_Gmailラベル自動回答（新仕様・未実装）
+⚠️ **仕様変更により再設計中**
 ```bash
-cd ../04_Gmailラベル自動回答
-clasp create --title "AIDraft-Gmail"
-clasp push
+# 現在は実装停止中
+# 新仕様確定後に実装予定
 ```
 
 ### 3. 🔗 プロジェクトURL確認する
@@ -65,25 +69,20 @@ clasp open
 - 📝 **お問い合わせ用**: `159ftLgPcrqdQU-W5UqpPcgrrZGado12kocXGFVnhzXI`
 - 📋 **アンケート用**: `1PPwXbBGdSLIC8yeQY33dNDlEqjdJ4X-PibaDPiWU6Io`（単発・WeekendEnt共通）
 
-#### ⚙️ 各プロジェクトのconfig.js修正する
+#### ⚙️ 各プロジェクトのsheets.js修正する
 ```javascript
-// 01_お問い合わせ/src/config/config.js
-const CONFIG = {
-  SPREADSHEET_ID: "159ftLgPcrqdQU-W5UqpPcgrrZGado12kocXGFVnhzXI",
-  SHEET_NAME: "お問い合わせ"
-};
+// 01_お問い合わせ/src/config/sheets.js
+// DENTAL_SEMINAR.SHEET_IDを更新
+SHEET_ID: '159ftLgPcrqdQU-W5UqpPcgrrZGado12kocXGFVnhzXI',
 
-// 02_単発/src/config/config.js
-const CONFIG = {
-  SPREADSHEET_ID: "1PPwXbBGdSLIC8yeQY33dNDlEqjdJ4X-PibaDPiWU6Io",
-  SHEET_NAME: "単発"
-};
+// 02_単発/src/config/sheets.js
+// TANBATSU.SHEET_IDを更新
+SHEET_ID: '1PPwXbBGdSLIC8yeQY33dNDlEqjdJ4X-PibaDPiWU6Io',
 
-// 03_WeekendEnt/src/config/config.js
-const CONFIG = {
-  SPREADSHEET_ID: "1PPwXbBGdSLIC8yeQY33dNDlEqjdJ4X-PibaDPiWU6Io", // 02と同じ
-  SHEET_NAME: "WeekendEnt"
-};
+// 03_WeekendEnt/src/config/sheets.js
+// WEEKEND_ENT.SHEET_IDを更新、シート名も修正
+SHEET_ID: '1PPwXbBGdSLIC8yeQY33dNDlEqjdJ4X-PibaDPiWU6Io',
+SHEET_NAME: 'WeekenDent', // 実際のシート名に合わせる
 ```
 
 #### 🚀 設定反映する
@@ -93,10 +92,21 @@ clasp push
 ```
 
 ### 5. ⚙️ 初期設定・動作確認する
-1. 🔑 OpenAI APIキーを設定する（クライアントアカウント内）
-2. ✅ 権限を許可する
-3. 🧪 テスト実行を確認する
-4. ✅ 動作確認を完了する
+1. 🔑 **OpenAI APIキー設定**
+   - スクリプトプロパティに `OPENAI_API_KEY` を追加
+   - 各プロジェクトで設定が必要
+
+2. 📊 **スプレッドシート共有設定**
+   - 対象スプレッドシートを `globaldental.seminar@gmail.com` に「編集者」権限で共有
+   - Apps Script APIを有効化: https://script.google.com/home/usersettings
+
+3. 🧪 **テスト実行**
+   - 01_お問い合わせ: `testSingleRow()` 関数を実行
+   - 02_単発: `testProcessing()` 関数を実行
+   - 03_WeekendEnt: `testProcessing()` 関数を実行（動的列検索機能付き）
+
+4. ✅ **動作確認完了**
+   - 各テストで「0件処理」または正常処理を確認
 
 ### 6. 🔒 セキュリティ対応する
 1. 🚪 **クライアントアカウントからログアウトする**
@@ -108,11 +118,11 @@ clasp push
 
 ## ⏱️ 作業時間
 - 🔧 **準備**: 5分で完了
-- 🏗️ **作成・デプロイ**: 40分で完了（10分×4）
+- 🏗️ **作成・デプロイ**: 30分で完了（10分×3プロジェクト）
 - 📊 **スプレッドシート接続**: 15分で完了
 - ⚙️ **設定・動作確認**: 20分で完了
 - 🔒 **セキュリティ対応**: 5分で完了
-- 🎯 **合計**: 約85分で完了
+- 🎯 **合計**: 約75分で完了（04_Gmail除く）
 
 ## ⚠️ 重要な注意事項
 
@@ -125,3 +135,5 @@ clasp push
 - 💾 作業前にローカルコードのバックアップを取ります
 - 🔗 各プロジェクトのURLを記録・共有します
 - 🆔 スプレッドシートIDの事前確認をします
+- 🔄 **03_WeekendEnt**: 動的列検索機能により、フォーム質問追加に自動対応
+- ⚠️ **04_Gmail**: 仕様変更により現在は未実装（再設計中）

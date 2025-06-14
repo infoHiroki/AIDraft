@@ -5,8 +5,12 @@ class WeekendEntProcessor {
     const config = SHEET_CONFIGS.WEEKEND_ENT;
     const sheet = SheetService.getSheet(config.SHEET_ID, config.SHEET_NAME);
     
-    // ヘッダー追加（初回のみ）
-    SheetService.addHeaderIfNeeded(sheet, config.COLUMNS.AI_RESPONSE + 1, 'AI回答');
+    // 動的にカラムインデックスを取得し、必要に応じてヘッダーを追加
+    const columnIndices = SheetService.getMultipleColumnIndices(
+      sheet,
+      ['事務局対応', 'AI回答'],
+      { headerRow: 2, createIfNotFound: true }
+    );
     
     const data = sheet.getDataRange().getValues();
     let processedCount = 0;
@@ -14,10 +18,11 @@ class WeekendEntProcessor {
     for (let i = 2; i < data.length && processedCount < config.MAX_ROWS_PER_RUN; i++) {
       const row = data[i];
       
-      // G列（質問）があり、H列（事務局対応）が空なら未処理
+      // G列（質問）があり、動的に取得した事務局対応列が空なら未処理
+      const statusColumnIndex = columnIndices['事務局対応'] - 1; // 0ベースに変換
       if (row[config.COLUMNS.QUESTION] && 
           row[config.COLUMNS.QUESTION].trim() !== '' &&
-          (!row[config.COLUMNS.STATUS] || row[config.COLUMNS.STATUS] === '')) {
+          (!row[statusColumnIndex] || row[statusColumnIndex] === '')) {
         try {
           const questionInfo = {
             email: row[config.COLUMNS.EMAIL] || '',
@@ -35,13 +40,13 @@ class WeekendEntProcessor {
             config.LABEL_NAME
           );
           
-          // ステータス更新
+          // ステータス更新（動的カラムインデックス使用）
           SheetService.updateResponse(
             sheet, 
             i + 1, 
             {
-              statusCol: config.COLUMNS.STATUS + 1,
-              responseCol: config.COLUMNS.AI_RESPONSE + 1,
+              statusCol: columnIndices['事務局対応'] || config.COLUMNS.STATUS + 1,
+              responseCol: columnIndices['AI回答'] || config.COLUMNS.AI_RESPONSE + 1,
               value: COMMON_CONFIG.STATUS.COMPLETED
             },
             new Date(),
@@ -58,8 +63,8 @@ class WeekendEntProcessor {
             sheet, 
             i + 1, 
             {
-              statusCol: config.COLUMNS.STATUS + 1,
-              responseCol: config.COLUMNS.AI_RESPONSE + 1,
+              statusCol: columnIndices['事務局対応'] || config.COLUMNS.STATUS + 1,
+              responseCol: columnIndices['AI回答'] || config.COLUMNS.AI_RESPONSE + 1,
               value: COMMON_CONFIG.STATUS.ERROR
             },
             new Date(),
@@ -78,8 +83,12 @@ class WeekendEntProcessor {
     const config = SHEET_CONFIGS.WEEKEND_ENT;
     const sheet = SheetService.getSheet(config.SHEET_ID, config.SHEET_NAME);
     
-    // ヘッダー追加
-    SheetService.addHeaderIfNeeded(sheet, config.COLUMNS.AI_RESPONSE + 1, 'AI回答');
+    // 動的にカラムインデックスを取得し、必要に応じてヘッダーを追加
+    const columnIndices = SheetService.getMultipleColumnIndices(
+      sheet,
+      ['事務局対応', 'AI回答'],
+      { headerRow: 2, createIfNotFound: true }
+    );
     
     const data = sheet.getDataRange().getValues();
     let processedCount = 0;
@@ -87,9 +96,11 @@ class WeekendEntProcessor {
     for (let i = 2; i < data.length; i++) {
       const row = data[i];
       
+      // 動的に取得したステータス列をチェック
+      const statusColumnIndex = columnIndices['事務局対応'] - 1; // 0ベースに変換
       if (row[config.COLUMNS.QUESTION] && 
           row[config.COLUMNS.QUESTION].trim() !== '' &&
-          (!row[config.COLUMNS.STATUS] || row[config.COLUMNS.STATUS] === '')) {
+          (!row[statusColumnIndex] || row[statusColumnIndex] === '')) {
         console.log(`テスト実行: Row ${i + 1}`);
         
         try {
@@ -111,13 +122,13 @@ class WeekendEntProcessor {
             config.LABEL_NAME
           );
           
-          // テスト実行として記録
+          // テスト実行として記録（動的カラムインデックス使用）
           SheetService.updateResponse(
             sheet, 
             i + 1, 
             {
-              statusCol: config.COLUMNS.STATUS + 1,
-              responseCol: config.COLUMNS.AI_RESPONSE + 1,
+              statusCol: columnIndices['事務局対応'] || config.COLUMNS.STATUS + 1,
+              responseCol: columnIndices['AI回答'] || config.COLUMNS.AI_RESPONSE + 1,
               value: COMMON_CONFIG.STATUS.TEST
             },
             new Date(),
@@ -134,8 +145,8 @@ class WeekendEntProcessor {
             sheet, 
             i + 1, 
             {
-              statusCol: config.COLUMNS.STATUS + 1,
-              responseCol: config.COLUMNS.AI_RESPONSE + 1,
+              statusCol: columnIndices['事務局対応'] || config.COLUMNS.STATUS + 1,
+              responseCol: columnIndices['AI回答'] || config.COLUMNS.AI_RESPONSE + 1,
               value: COMMON_CONFIG.STATUS.ERROR
             },
             new Date(),

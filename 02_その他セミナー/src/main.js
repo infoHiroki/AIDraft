@@ -1,21 +1,21 @@
 // メイン処理ファイル
 
-// 単発シート自動処理（定期実行用）
-function processTanbatsu() {
+// その他セミナーシート自動処理（定期実行用）
+function processOtherSeminar() {
   try {
-    return TanbatsuProcessor.process();
+    return OtherSeminarProcessor.process();
   } catch (error) {
-    console.error('単発シート処理エラー:', error);
+    console.error('その他セミナーシート処理エラー:', error);
     throw error;
   }
 }
 
-// 単発シートテスト実行
-function testTanbatsuSingleRow() {
+// その他セミナーシートテスト実行
+function testOtherSeminarSingleRow() {
   try {
-    return TanbatsuProcessor.testSingleRow();
+    return OtherSeminarProcessor.testSingleRow();
   } catch (error) {
-    console.error('単発シートテスト実行エラー:', error);
+    console.error('その他セミナーシートテスト実行エラー:', error);
     throw error;
   }
 }
@@ -25,13 +25,13 @@ function setupTrigger() {
   // 既存のトリガーを削除
   const triggers = ScriptApp.getProjectTriggers();
   triggers.forEach(trigger => {
-    if (trigger.getHandlerFunction() === 'processTanbatsu') {
+    if (trigger.getHandlerFunction() === 'processOtherSeminar') {
       ScriptApp.deleteTrigger(trigger);
     }
   });
   
   // 新しいトリガーを作成
-  ScriptApp.newTrigger('processTanbatsu')
+  ScriptApp.newTrigger('processOtherSeminar')
     .timeBased()
     .everyHours(1)
     .create();
@@ -43,7 +43,7 @@ function setupTrigger() {
 function deleteTriggers() {
   const triggers = ScriptApp.getProjectTriggers();
   triggers.forEach(trigger => {
-    if (trigger.getHandlerFunction() === 'processTanbatsu') {
+    if (trigger.getHandlerFunction() === 'processOtherSeminar') {
       ScriptApp.deleteTrigger(trigger);
     }
   });
@@ -55,14 +55,14 @@ function checkConfig() {
   const apiKey = PropertiesService.getScriptProperties().getProperty('OPENAI_API_KEY');
   console.log('API Key設定:', apiKey ? '設定済み' : '未設定');
   
-  // 単発シート接続確認
-  const tanbatsuConfig = SHEET_CONFIGS.TANBATSU;
-  console.log('単発シート設定:', tanbatsuConfig);
+  // その他セミナーシート接続確認
+  const config = SHEET_CONFIGS.OTHER_SEMINAR;
+  console.log('その他セミナーシート設定:', config);
   
   try {
-    const tanbatsuSheet = SheetService.getSheet(tanbatsuConfig.SHEET_ID, tanbatsuConfig.SHEET_NAME);
-    console.log('単発シート接続:', tanbatsuSheet ? '成功' : '失敗');
+    const sheet = SheetService.getSheet(config.SHEET_ID, config.SHEET_NAME);
+    console.log('その他セミナーシート接続:', sheet ? '成功' : '失敗');
   } catch (error) {
-    console.log('単発シート接続エラー:', error.toString());
+    console.log('その他セミナーシート接続エラー:', error.toString());
   }
 }

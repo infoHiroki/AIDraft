@@ -12,9 +12,10 @@ class OtherSeminarProcessor {
   static _processRows(testMode = false) {
     const config = SHEET_CONFIGS.OTHER_SEMINAR;
     const sheet = SheetService.getSheet(config.SHEET_ID, config.SHEET_NAME);
-    const aiColumnIndex = SheetService.getColumnIndexByHeader(sheet, 'AI回答', { headerRow: 1, createIfNotFound: true });
     const data = sheet.getDataRange().getValues();
     let processedCount = 0;
+    
+    console.log(`処理開始: ${testMode ? 'テストモード' : '本番モード'}, データ行数: ${data.length}`);
     
     for (let i = 1; i < data.length && processedCount < (testMode ? 1 : config.MAX_ROWS_PER_RUN); i++) {
       const row = data[i];
@@ -32,12 +33,13 @@ class OtherSeminarProcessor {
           const draft = AIService.generateSeminarQuestionResponse(questionInfo);
           const draftId = GmailService.createDraft(questionInfo.email, draft.subject, draft.body, config.LABEL_NAME);
           
-          this._updateSheet(sheet, i + 1, aiColumnIndex, COMMON_CONFIG.STATUS.TEST, draftId, draft.body);
+          this._updateSheet(sheet, i + 1, COMMON_CONFIG.STATUS.TEST, draftId);
+          console.log(`処理成功: Row ${i + 1} (${questionInfo.email})`);
           processedCount++;
           
         } catch (error) {
           console.error(`Row ${i + 1} エラー:`, error);
-          this._updateSheet(sheet, i + 1, aiColumnIndex, COMMON_CONFIG.STATUS.ERROR, null, error.toString());
+          this._updateSheet(sheet, i + 1, COMMON_CONFIG.STATUS.ERROR);
         }
       }
     }
@@ -46,16 +48,17 @@ class OtherSeminarProcessor {
     return processedCount;
   }
   
-  static _updateSheet(sheet, rowIndex, aiColumnIndex, status, draftId, content) {
+  static _updateSheet(sheet, rowIndex, status, draftId = null) {
     const config = SHEET_CONFIGS.OTHER_SEMINAR;
     const timestamp = Utilities.formatDate(new Date(), 'Asia/Tokyo', 'yyyy/MM/dd HH:mm');
     
-    sheet.getRange(rowIndex, config.COLUMNS.STATUS + 1).setValue(status);
+    let value = status;
+    if (draftId) {
+      value = `${status} - ${timestamp} (Draft: ${draftId})`;
+    } else if (status === COMMON_CONFIG.STATUS.ERROR) {
+      value = `${status} - ${timestamp}`;
+    }
     
-    const info = draftId ? 
-      `${timestamp}\nDraft ID: ${draftId}\n────────────────\n${content}` :
-      `${timestamp}\n────────────────\nエラー: ${content}`;
-    
-    sheet.getRange(rowIndex, aiColumnIndex).setValue(info);
+    sheet.getRange(rowIndex, config.COLUMNS.STATUS + 1).setValue(value);
   }
 }

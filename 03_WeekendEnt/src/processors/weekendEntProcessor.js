@@ -15,6 +15,8 @@ class WeekendEntProcessor {
     const data = sheet.getDataRange().getValues();
     let processedCount = 0;
     
+    console.log(`処理開始: ${testMode ? 'テストモード' : '本番モード'}, データ行数: ${data.length}`);
+    
     for (let i = 1; i < data.length && processedCount < (testMode ? 1 : config.MAX_ROWS_PER_RUN); i++) {
       const row = data[i];
       
@@ -32,6 +34,7 @@ class WeekendEntProcessor {
           const draftId = GmailService.createDraft(questionInfo.email, draft.subject, draft.body, config.LABEL_NAME);
           
           this._updateSheet(sheet, i + 1, COMMON_CONFIG.STATUS.TEST, draftId);
+          console.log(`処理成功: Row ${i + 1} (${questionInfo.email})`);
           processedCount++;
           
         } catch (error) {

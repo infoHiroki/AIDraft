@@ -1,10 +1,10 @@
-// Gmail ラベル自動回答システム
+// Gmail 自動回答システム（KISS原則）
 // メイン関数
 
 // メイン処理関数
 function processLabeledEmails() {
   try {
-    console.log('Gmailラベル自動回答処理開始');
+    console.log('Gmail自動回答処理開始');
     const processedCount = LabelProcessor.process();
     console.log(`処理完了: ${processedCount}件`);
     return processedCount;
@@ -45,10 +45,10 @@ function checkConfig() {
       console.log('Gmail権限:', 'エラー -', error.message);
     }
     
-    // ラベル存在確認
+    // ラベル確認
     console.log('=== ラベル確認 ===');
-    console.log('処理対象ラベル:', GMAIL_CONFIG.SOURCE_LABEL);
-    console.log('処理済みラベル:', GMAIL_CONFIG.TARGET_LABEL);
+    console.log('除外ラベル:', GMAIL_CONFIG.EXCLUDE_LABEL);
+    console.log('結果ラベル:', GMAIL_CONFIG.RESULT_LABEL);
     
     console.log('設定確認完了');
   } catch (error) {

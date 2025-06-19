@@ -1,17 +1,14 @@
-// Gmail ラベル処理クラス
+// Gmail 未読処理クラス
 class LabelProcessor {
   
   static process() {
-    console.log('Gmailラベル処理開始');
+    console.log('Gmail自動回答処理開始');
     
-    // 処理対象メールを検索
-    const emails = GmailService.searchEmailsByLabel(
-      GMAIL_CONFIG.SOURCE_LABEL,
-      GMAIL_CONFIG.TARGET_LABEL
-    );
+    // 未読メールを検索（除外ラベル考慮）
+    const emails = GmailService.searchUnreadEmails();
     
     if (emails.length === 0) {
-      console.log('処理対象のメールが見つかりません');
+      console.log('処理対象の未読メールが見つかりません');
       return 0;
     }
     
@@ -38,14 +35,10 @@ class LabelProcessor {
           aiResponse.body
         );
         
-        // ラベル変更（処理済み）
-        GmailService.changeThreadLabel(
-          email.thread,
-          GMAIL_CONFIG.SOURCE_LABEL,
-          GMAIL_CONFIG.TARGET_LABEL
-        );
+        // 結果ラベル追加
+        GmailService.addLabelToThread(email.thread, GMAIL_CONFIG.RESULT_LABEL);
         
-        // 既読にする
+        // 既読にする（処理済み判定）
         GmailService.markAsRead(email.thread);
         
         console.log(`処理完了 - Draft ID: ${draftId}`);
@@ -53,27 +46,22 @@ class LabelProcessor {
         
       } catch (error) {
         console.error(`メール処理エラー (${email.subject}):`, error);
-        
-        // エラー時は元のラベルを保持
         console.log('エラーのため処理をスキップしました');
       }
     });
     
-    console.log(`Gmailラベル処理完了: ${processedCount}件処理`);
+    console.log(`Gmail自動回答処理完了: ${processedCount}件処理`);
     return processedCount;
   }
   
   static testSingleEmail() {
-    console.log('Gmailラベル テスト実行開始');
+    console.log('Gmail自動回答 テスト実行開始');
     
-    // 処理対象メールを検索（1件のみ）
-    const emails = GmailService.searchEmailsByLabel(
-      GMAIL_CONFIG.SOURCE_LABEL,
-      GMAIL_CONFIG.TARGET_LABEL
-    );
+    // 未読メールを検索（1件のみ）
+    const emails = GmailService.searchUnreadEmails();
     
     if (emails.length === 0) {
-      console.log('テスト対象のメールが見つかりません');
+      console.log('テスト対象の未読メールが見つかりません');
       return 0;
     }
     
@@ -98,8 +86,8 @@ class LabelProcessor {
         aiResponse.body
       );
       
-      // テスト用: ラベル変更はしない（元のラベルを保持）
-      console.log('テスト実行のため、ラベル変更はスキップしました');
+      // テスト用: ラベル追加・既読化はしない
+      console.log('テスト実行のため、ラベル変更・既読化はスキップしました');
       
       console.log(`テスト完了 - Draft ID: ${draftId}`);
       return 1;

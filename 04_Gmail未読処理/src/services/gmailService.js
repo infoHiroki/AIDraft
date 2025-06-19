@@ -1,13 +1,11 @@
 // Gmail サービス
 class GmailService {
   
-  // ラベル付きメールを検索
-  static searchEmailsByLabel(labelName, excludeLabel = null) {
+  // 未読メールを検索（除外ラベル考慮）
+  static searchUnreadEmails() {
     try {
-      let query = `label:"${labelName}"`;
-      if (excludeLabel) {
-        query += ` -label:"${excludeLabel}"`;
-      }
+      // シンプル検索: 未読 - 除外ラベル
+      const query = `is:unread -label:"${GMAIL_CONFIG.EXCLUDE_LABEL}"`;
       
       const threads = GmailApp.search(query, 0, COMMON_CONFIG.MAX_EMAILS_PER_RUN);
       const emails = [];
@@ -30,7 +28,7 @@ class GmailService {
       
       return emails;
     } catch (error) {
-      console.error(`メール検索エラー (Label: ${labelName}):`, error);
+      console.error('未読メール検索エラー:', error);
       throw error;
     }
   }
@@ -66,24 +64,14 @@ class GmailService {
     }
   }
   
-  // スレッドのラベルを変更
-  static changeThreadLabel(thread, fromLabel, toLabel) {
+  // スレッドにラベルを追加
+  static addLabelToThread(thread, labelName) {
     try {
-      // 元のラベルを削除
-      if (fromLabel) {
-        const oldLabel = GmailApp.getUserLabelByName(fromLabel);
-        if (oldLabel) {
-          thread.removeLabel(oldLabel);
-        }
-      }
-      
-      // 新しいラベルを追加
-      const newLabel = this.getOrCreateLabel(toLabel);
-      thread.addLabel(newLabel);
-      
-      console.log(`ラベル変更: ${fromLabel} → ${toLabel}`);
+      const label = this.getOrCreateLabel(labelName);
+      thread.addLabel(label);
+      console.log(`ラベル追加: ${labelName}`);
     } catch (error) {
-      console.error(`ラベル変更エラー:`, error);
+      console.error(`ラベル追加エラー (${labelName}):`, error);
       throw error;
     }
   }

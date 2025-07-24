@@ -49,9 +49,11 @@ clasp deploy
 
 ### テスト
 ```bash
-# 従来のテストランナーはなし - GASエディタまたは手動実行を使用
-# 利用可能なテスト関数: runUnitTests(), runIntegrationTests()
-# 単一項目テスト: processLatestItemTest()
+# GASエディタで以下の関数を実行
+checkConfig()           # 設定・接続確認
+testWeekendDent()       # WeekenDent 1件テスト
+testOtherSeminar()      # その他セミナー 1件テスト
+testInquiry()           # お問い合わせ 1件テスト
 ```
 
 ### 設定管理
@@ -138,21 +140,21 @@ Draft ID: abc123def456
 
 #### 01_お問い合わせ
 - **メイン処理**: `processInquiries()` - 未処理問い合わせを最大20件まで自動処理
-- **テスト実行**: `testSingleRow()` - 1件のみ処理してテスト実行として記録
+- **テスト実行**: `testInquiry()` - 1件のみ処理してテスト実行として記録
 - **設定確認**: `checkConfig()` - APIキー設定、シート接続状況の確認
 - **トリガー設定**: `setupTrigger()` - 1時間ごとの定期実行トリガーを作成
 - **トリガー削除**: `deleteTriggers()` - processInquiries用のトリガーを全削除
 
 #### 02_その他セミナー
 - **メイン処理**: `processTanbatsu()` - 未処理質問を最大20件まで自動処理
-- **テスト実行**: `testTanbatsuSingleRow()` - 1件のみ処理してテスト実行として記録
+- **テスト実行**: `testOtherSeminar()` - 1件のみ処理してテスト実行として記録
 - **設定確認**: `checkConfig()` - APIキー設定、シート接続状況の確認
 - **トリガー設定**: `setupTrigger()` - 1時間ごとの定期実行トリガーを作成
 - **トリガー削除**: `deleteTriggers()` - processTanbatsu用のトリガーを全削除
 
 #### 03_WeekendEnt
 - **メイン処理**: `processWeekendEnt()` - 未処理質問を最大20件まで自動処理
-- **テスト実行**: `testWeekendEntSingleRow()` - 1件のみ処理してテスト実行として記録
+- **テスト実行**: `testWeekendDent()` - 1件のみ処理してテスト実行として記録
 - **設定確認**: `checkConfig()` - APIキー設定、シート接続状況の確認
 - **トリガー設定**: `setupTrigger()` - 1時間ごとの定期実行トリガーを作成
 - **トリガー削除**: `deleteTriggers()` - processWeekendEnt用のトリガーを全削除
@@ -202,12 +204,12 @@ Draft ID: abc123def456
 - 単一項目テスト用の手動トリガー関数
 - 各プロジェクトでのトリガー管理機能（設定/削除）
 
-### テストフレームワーク
-GAS環境向けに構築されたカスタム軽量テスト：
-- `unitTests.js`の単体テスト（Gmailプロセッサのみ）
-- `integrationTests.js`の統合テスト（Gmailプロセッサのみ）
-- アサーションメソッド：`assertEqual`、`assertTrue`、`assertFalse`、`assertNotNull`、`assertArrayLength`
-- 分離テスト用のモックデータサポート
+### テスト方法
+GAS環境での実際のデータを使用したテスト：
+- `checkConfig()` - 設定確認（API、Gmail、スプレッドシート接続）
+- `test○○○()` - 各シートの1件実処理テスト
+- 実際のスプレッドシートとGmail APIを使用
+- エラー発生時は詳細ログで問題を特定
 
 ### 返信テンプレート
 

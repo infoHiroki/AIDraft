@@ -5,71 +5,35 @@
 
 const SHEET_CONFIG = {
   // 統合スプレッドシートID
-  SPREADSHEET_ID: '1tBCljX_ygj8HlqAxvb7SFv6QBnNMj-zdWc1KZAKCJ-M',
+  SPREADSHEET_ID: '1PPwXbBGdSLIC8yeQY33dNDlEqjdJ4X-PibaDPiWU6Io',
   
   // 各シートの設定
   SHEETS: {
     WEEKEND: {
-      sheetName: 'WeekendDent',
+      sheetName: 'WeekenDent',
       description: 'WeekendDentセミナーアンケート',
-      columns: {
-        timestamp: 'A',
-        email: 'B', 
-        doctorName: 'C',
-        seminarType: 'D',
-        impression: 'E',
-        question: 'F',
-        status: 'G',
-        aiResponse: 'H'
-      },
       labelName: 'AI自動回答_WeekendEnt',
       subjectPrefix: 'WeekendDentセミナー',
-      // 処理条件: F列に質問があり、G列（ステータス）が空
       questionColumn: 'F',
-      statusColumn: 'G',
-      outputColumn: 'H'
+      statusColumn: 'G'
     },
     
     OTHER: {
-      sheetName: 'その他単発セミナー回答',
+      sheetName: 'その他セミナー',
       description: 'その他セミナーアンケート',
-      columns: {
-        // A, B列は空
-        clinicName: 'C',
-        doctorName: 'D', 
-        summary: 'E',
-        question: 'F',
-        status: 'G',
-        aiResponse: 'H'
-      },
       labelName: 'AI自動回答_その他',
       subjectPrefix: 'その他セミナー',
-      // 処理条件: F列に質問があり、G列（ステータス）が空
-      questionColumn: 'F', 
-      statusColumn: 'G',
-      outputColumn: 'H'
+      questionColumn: 'F',
+      statusColumn: 'G'
     },
     
     INQUIRY: {
-      sheetName: '#GDX、ウィークエンデント、単発、黒飛出演',
+      sheetName: 'お問い合わせ',
       description: 'お問い合わせフォーム',
-      columns: {
-        // A列は空
-        doctorName: 'B',
-        position: 'C',
-        clinicName: 'D',
-        summary: 'E',
-        question: 'F',
-        status: 'G',
-        // 注意: お問い合わせのみH列に事務局対応
-        aiResponse: 'H'
-      },
       labelName: 'AI自動回答_お問い合わせ',
       subjectPrefix: 'お問い合わせ',
-      // 処理条件: F列に質問があり、H列（ステータス）が空 ※他と異なる
       questionColumn: 'F',
-      statusColumn: 'H',  // 注意: お問い合わせのみH列
-      outputColumn: 'I'   // 注意: お問い合わせのみI列
+      statusColumn: 'H'
     }
   }
 };

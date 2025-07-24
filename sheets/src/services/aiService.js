@@ -85,7 +85,6 @@ WeekendDentセミナーに関する以下の問い合わせに対して、指定
 
 【問い合わせ情報】
 先生名: ${data.doctorName}先生
-セミナータイプ: ${data.seminarType}
 セミナー感想: ${data.impression}
 質問内容: ${data.question}
 

@@ -15,7 +15,15 @@ const SHEET_CONFIG = {
       labelName: 'AI自動回答_WeekendEnt',
       subjectPrefix: 'WeekendDentセミナー',
       questionColumn: 'F',
-      statusColumn: 'G'
+      statusColumn: 'G',
+      columns: {
+        timestamp: 'A',
+        email: 'B',
+        clinicName: 'C',  // 歯科
+        doctorName: 'D',  // 先生
+        impression: 'E',  // セミナーのご感想
+        question: 'F'     // ご質問
+      }
     },
     
     OTHER: {
@@ -24,7 +32,15 @@ const SHEET_CONFIG = {
       labelName: 'AI自動回答_その他',
       subjectPrefix: 'その他セミナー',
       questionColumn: 'F',
-      statusColumn: 'G'
+      statusColumn: 'G',
+      columns: {
+        timestamp: 'A',
+        email: 'B',
+        doctorName: 'C',  // 名前
+        clinicName: 'D',  // 院名
+        summary: 'E',     // 感想
+        question: 'F'     // 質問
+      }
     },
     
     INQUIRY: {
@@ -33,7 +49,15 @@ const SHEET_CONFIG = {
       labelName: 'AI自動回答_お問い合わせ',
       subjectPrefix: 'お問い合わせ',
       questionColumn: 'F',
-      statusColumn: 'H'
+      statusColumn: 'H',
+      columns: {
+        timestamp: 'A',
+        email: 'B',
+        clinicName: 'C',  // 院名
+        doctorName: 'D',  // 名前
+        summary: 'E',     // 概要
+        question: 'F'     // 質問
+      }
     }
   }
 };

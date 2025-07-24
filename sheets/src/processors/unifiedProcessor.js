@@ -134,21 +134,20 @@ class UnifiedProcessor {
       case 'WEEKEND':
         data.email = row[this.getColumnIndex(config.columns.email)] || '';
         data.doctorName = row[this.getColumnIndex(config.columns.doctorName)] || '';
-        data.seminarType = row[this.getColumnIndex(config.columns.seminarType)] || '';
+        data.clinicName = row[this.getColumnIndex(config.columns.clinicName)] || '';
         data.impression = row[this.getColumnIndex(config.columns.impression)] || '';
         break;
         
       case 'OTHER':
-        data.email = row[this.getColumnIndex(config.columns.clinicName)] || ''; // Cに医院名
+        data.email = row[this.getColumnIndex(config.columns.email)] || '';
         data.doctorName = row[this.getColumnIndex(config.columns.doctorName)] || '';
         data.clinicName = row[this.getColumnIndex(config.columns.clinicName)] || '';
         data.summary = row[this.getColumnIndex(config.columns.summary)] || '';
         break;
         
       case 'INQUIRY':
-        data.email = row[this.getColumnIndex(config.columns.clinicName)] || ''; // Dに医院名
+        data.email = row[this.getColumnIndex(config.columns.email)] || '';
         data.doctorName = row[this.getColumnIndex(config.columns.doctorName)] || '';
-        data.position = row[this.getColumnIndex(config.columns.position)] || '';
         data.clinicName = row[this.getColumnIndex(config.columns.clinicName)] || '';
         data.summary = row[this.getColumnIndex(config.columns.summary)] || '';
         break;
@@ -167,24 +166,9 @@ class UnifiedProcessor {
    * @param {string} status - ステータス
    */
   static updateStatus(sheet, rowNumber, config, draftId, content, status) {
-    const now = new Date();
-    const timestamp = Utilities.formatDate(now, 'Asia/Tokyo', 'yyyy/MM/dd HH:mm');
-    
-    // ステータス列に状態を記録
+    // ステータス列にステータスのみ記録（約束通りI列は使わない）
     const statusColumn = config.statusColumn;
     sheet.getRange(statusColumn + rowNumber).setValue(status);
-    
-    // 出力列に統合情報を記録
-    const outputColumn = config.outputColumn;
-    let outputContent = `${timestamp}\n`;
-    
-    if (draftId) {
-      outputContent += `Draft ID: ${draftId}\n`;
-    }
-    
-    outputContent += `────────────────\n${content}`;
-    
-    sheet.getRange(outputColumn + rowNumber).setValue(outputContent);
   }
   
   /**

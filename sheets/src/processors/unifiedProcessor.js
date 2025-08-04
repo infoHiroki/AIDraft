@@ -1,57 +1,61 @@
 /**
- * 統合プロセッサークラス
+ * 統合プロセッサークラス（V2: 管理シートベース）
  * すべてのシートの処理を統一的に行う
  */
 class UnifiedProcessor {
   
   /**
-   * 指定されたシートタイプの処理を実行
+   * 指定されたシートタイプの処理を実行（管理シートベース）
    * @param {string} sheetType - シートタイプ（'WEEKEND', 'OTHER', 'INQUIRY'）
    * @returns {number} 処理件数
    */
   static async process(sheetType) {
     const config = getSheetConfig(sheetType);
-    const sheet = SheetService.getSheet(SHEET_CONFIG.SPREADSHEET_ID, config.sheetName);
+    console.log(`${config.description}の処理を開始（管理シートベース）`);
     
-    console.log(`${config.description}の処理を開始`);
+    // 未処理レコードを取得
+    const unprocessedRecords = ManagementService.getUnprocessedRecords(sheetType);
     
-    const data = sheet.getDataRange().getValues();
+    if (unprocessedRecords.length === 0) {
+      console.log(`${config.description}: 未処理データなし`);
+      return 0;
+    }
+    
+    console.log(`${config.description}: ${unprocessedRecords.length}件の未処理データを検出`);
+    
     let processedCount = 0;
+    const maxProcessing = Math.min(unprocessedRecords.length, COMMON_CONFIG.LIMITS.MAX_ROWS_PER_EXECUTION);
     
-    for (let i = 1; i < data.length && processedCount < COMMON_CONFIG.LIMITS.MAX_ROWS_PER_EXECUTION; i++) {
-      const row = data[i];
+    for (let i = 0; i < maxProcessing; i++) {
+      const record = unprocessedRecords[i];
       
-      // 質問列にデータがあり、ステータス列が空なら未処理
-      const questionIndex = this.getColumnIndex(config.questionColumn);
-      const statusIndex = this.getColumnIndex(config.statusColumn);
-      
-      if (row[questionIndex] && row[questionIndex].toString().trim() !== '' && 
-          (!row[statusIndex] || row[statusIndex] === '')) {
-        try {
-          // データ抽出
-          const extractedData = this.extractData(row, config, sheetType);
-          
-          // AI回答生成
-          const aiResponse = await AIService.generateSeminarResponse(extractedData, sheetType);
-          
-          // Gmail下書き作成
-          const draftId = await GmailService.createDraft(
-            extractedData.email,
-            `Re: ${config.subjectPrefix}についてのご質問`,
-            aiResponse,
-            config.labelName
-          );
-          
-          // ステータス更新
-          this.updateStatus(sheet, i + 1, config, draftId, aiResponse, COMMON_CONFIG.STATUS.COMPLETED);
-          
-          console.log(`Row ${i + 1}: 下書き作成成功 (${config.description})`);
-          processedCount++;
-          
-        } catch (error) {
-          console.error(`Row ${i + 1} エラー (${config.description}):`, error);
-          this.updateStatus(sheet, i + 1, config, null, error.toString(), COMMON_CONFIG.STATUS.ERROR);
-        }
+      try {
+        // 処理開始を記録
+        ManagementService.createProcessingRecord(sheetType, record.timestamp);
+        
+        // データ抽出
+        const extractedData = this.extractData(record.data, config, sheetType);
+        
+        // AI回答生成
+        const aiResponse = await AIService.generateSeminarResponse(extractedData, sheetType);
+        
+        // Gmail下書き作成
+        const draftId = await GmailService.createDraft(
+          extractedData.email,
+          `Re: ${config.subjectPrefix}についてのご質問`,
+          aiResponse,
+          config.labelName
+        );
+        
+        // 処理完了を記録
+        ManagementService.markAsCompleted(sheetType, record.timestamp);
+        
+        console.log(`${record.timestamp}: 下書き作成成功 (${config.description})`);
+        processedCount++;
+        
+      } catch (error) {
+        console.error(`${record.timestamp} エラー (${config.description}):`, error);
+        ManagementService.markAsError(sheetType, record.timestamp, error.toString());
       }
     }
     
@@ -60,61 +64,67 @@ class UnifiedProcessor {
   }
   
   /**
-   * 1件のみテスト実行
+   * 1件のみテスト実行（管理シートベース）
    * @param {string} sheetType - シートタイプ
    * @returns {number} 処理件数（0または1）
    */
   static async testSingle(sheetType) {
     const config = getSheetConfig(sheetType);
-    const sheet = SheetService.getSheet(SHEET_CONFIG.SPREADSHEET_ID, config.sheetName);
+    console.log(`${config.description}のテスト実行を開始（管理シートベース）`);
     
-    console.log(`${config.description}のテスト実行を開始`);
+    // 未処理レコードを取得
+    const unprocessedRecords = ManagementService.getUnprocessedRecords(sheetType);
     
-    const data = sheet.getDataRange().getValues();
-    
-    for (let i = 1; i < data.length; i++) {
-      const row = data[i];
-      const questionIndex = this.getColumnIndex(config.questionColumn);
-      const statusIndex = this.getColumnIndex(config.statusColumn);
-      
-      if (row[questionIndex] && row[questionIndex].toString().trim() !== '' && 
-          (!row[statusIndex] || row[statusIndex] === '')) {
-        
-        console.log(`テスト実行: Row ${i + 1} (${config.description})`);
-        
-        try {
-          // データ抽出
-          const extractedData = this.extractData(row, config, sheetType);
-          console.log('抽出データ:', extractedData);
-          
-          // AI回答生成
-          const aiResponse = await AIService.generateSeminarResponse(extractedData, sheetType);
-          console.log('AI回答:', aiResponse);
-          
-          // Gmail下書き作成
-          const draftId = await GmailService.createDraft(
-            extractedData.email,
-            `Re: ${config.subjectPrefix}についてのご質問`,
-            aiResponse,
-            config.labelName
-          );
-          
-          // テスト実行として記録
-          this.updateStatus(sheet, i + 1, config, draftId, aiResponse, COMMON_CONFIG.STATUS.TEST);
-          
-          console.log(`テスト完了: Gmail下書き作成 (${draftId})`);
-          return 1;
-          
-        } catch (error) {
-          console.error(`テストエラー Row ${i + 1} (${config.description}):`, error);
-          this.updateStatus(sheet, i + 1, config, null, 'テストエラー: ' + error.toString(), COMMON_CONFIG.STATUS.ERROR);
-          return 0;
-        }
-      }
+    if (unprocessedRecords.length === 0) {
+      console.log(`${config.description}: テスト対象データなし`);
+      return 0;
     }
     
-    console.log(`${config.description}: テスト対象データなし`);
-    return 0;
+    // 最初の未処理レコードでテスト実行
+    const record = unprocessedRecords[0];
+    console.log(`テスト実行: ${record.timestamp} (${config.description})`);
+    
+    try {
+      // データ抽出
+      const extractedData = this.extractData(record.data, config, sheetType);
+      console.log('抽出データ:', extractedData);
+      
+      // AI回答生成
+      const aiResponse = await AIService.generateSeminarResponse(extractedData, sheetType);
+      console.log('AI回答:', aiResponse);
+      
+      // Gmail下書き作成
+      const draftId = await GmailService.createDraft(
+        extractedData.email,
+        `Re: ${config.subjectPrefix}についてのご質問`,
+        aiResponse,
+        config.labelName
+      );
+      
+      // テスト実行として管理シートに記録
+      const managementSheet = getManagementSheet();
+      managementSheet.appendRow([
+        sheetType,          // A列: 種別
+        record.timestamp,   // B列: タイムスタンプ
+        'テスト実行'        // C列: 処理ステータス
+      ]);
+      
+      console.log(`テスト完了: Gmail下書き作成 (${draftId})`);
+      return 1;
+      
+    } catch (error) {
+      console.error(`テストエラー ${record.timestamp} (${config.description}):`, error);
+      
+      // エラーとして管理シートに記録
+      const managementSheet = getManagementSheet();
+      managementSheet.appendRow([
+        sheetType,          // A列: 種別
+        record.timestamp,   // B列: タイムスタンプ
+        'テストエラー'      // C列: 処理ステータス
+      ]);
+      
+      return 0;
+    }
   }
   
   /**

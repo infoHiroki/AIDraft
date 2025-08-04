@@ -7,6 +7,9 @@ const SHEET_CONFIG = {
   // 統合スプレッドシートID
   SPREADSHEET_ID: '1PPwXbBGdSLIC8yeQY33dNDlEqjdJ4X-PibaDPiWU6Io',
   
+  // 統合管理シート名
+  MANAGEMENT_SHEET_NAME: 'AI処理管理',
+  
   // 各シートの設定
   SHEETS: {
     WEEKEND: {
@@ -15,7 +18,7 @@ const SHEET_CONFIG = {
       labelName: 'AI自動回答_WeekendEnt',
       subjectPrefix: 'WeekendDentセミナー',
       questionColumn: 'F',
-      statusColumn: 'G',
+      statusColumn: 'J',
       columns: {
         timestamp: 'A',
         email: 'B',
@@ -80,4 +83,24 @@ function getSheetConfig(sheetType) {
  */
 function getAllSheetConfigs() {
   return SHEET_CONFIG.SHEETS;
+}
+
+/**
+ * 統合管理シートを取得
+ * @returns {Sheet} 統合管理シート
+ */
+function getManagementSheet() {
+  const spreadsheet = SpreadsheetApp.openById(SHEET_CONFIG.SPREADSHEET_ID);
+  let sheet = spreadsheet.getSheetByName(SHEET_CONFIG.MANAGEMENT_SHEET_NAME);
+  
+  // シートが存在しない場合は作成
+  if (!sheet) {
+    sheet = spreadsheet.insertSheet(SHEET_CONFIG.MANAGEMENT_SHEET_NAME);
+    // ヘッダー行を設定
+    sheet.getRange(1, 1, 1, 3).setValues([['種別', 'タイムスタンプ', '処理ステータス']]);
+    sheet.getRange(1, 1, 1, 3).setFontWeight('bold');
+    console.log(`統合管理シート作成: ${SHEET_CONFIG.MANAGEMENT_SHEET_NAME}`);
+  }
+  
+  return sheet;
 }

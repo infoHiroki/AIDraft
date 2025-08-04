@@ -1,12 +1,12 @@
-# AIDraft 運用ガイド
+# AIDraft 運用ガイド（V2.1: 統合管理シート方式）
 
 ## 🚀 初期設定（1回のみ）
 
 ### 1. 自動実行トリガーの設定
-各プロジェクトで以下を実行：
+sheets/プロジェクトで以下を実行：
 
 ```javascript
-setupTrigger(); // 1時間ごとの自動実行開始
+setupTriggers(); // 全シート（3シート）の1時間ごと自動実行開始
 ```
 
 ### 2. OpenAI APIキーの設定
@@ -17,7 +17,10 @@ setupTrigger(); // 1時間ごとの自動実行開始
 
 ### 3. 動作確認
 ```javascript
-testSingleRow(); // テスト実行で動作確認
+// 各シートの動作テスト
+testWeekendDent();    // WeekendDentシートテスト
+testOtherSeminar();   // その他セミナーシートテスト
+testInquiry();        // お問い合わせシートテスト
 ```
 
 ## 📋 日常運用
@@ -25,14 +28,14 @@ testSingleRow(); // テスト実行で動作確認
 ### Gmail下書きの確認・送信
 1. **Gmailの下書きフォルダを開く**
 2. **ラベルで絞り込み**
-   - "AI自動回答_お問い合わせ"
-   - "AI自動回答_単発"  
-   - "AI自動回答_WeekendEnt"
-   - "AI自動回答_Gmail"
+   - "AI自動回答_WeekendEnt"（WeekendDentシート）
+   - "AI自動回答_その他"（その他セミナーシート）
+   - "AI自動回答_お問い合わせ"（お問い合わせシート）
+   - "AI自動回答_Gmail"（Gmail手動ラベル処理）
 3. **下書き内容を確認・編集**
 4. **送信**
 
-### 04_Gmailラベル手動処理
+### Gmail手動ラベル処理
 1. **処理したいメールに手動でラベル付け**
    - ラベル名: "AI回答要求"
 2. **自動処理を待つ（1時間ごと）**
@@ -40,10 +43,15 @@ testSingleRow(); // テスト実行で動作確認
 3. **下書きが作成されたら確認・送信**
 
 ### 処理状況の確認
-**スプレッドシートで確認**
-- **01_お問い合わせ**: G列（ステータス）+ H列（統合情報）
-- **02_単発**: I列（ステータス）+ J列（統合情報）
-- **03_WeekendEnt**: H列（ステータス）+ I列（統合情報）
+**統合管理シートで確認（V2.1）**
+```javascript
+showStatistics(); // 処理統計情報の詳細表示
+```
+
+**または、スプレッドシート「AI処理管理」シートで直接確認**
+- **A列**: 種別（WeekenDent/その他セミナー/お問い合わせ）
+- **B列**: タイムスタンプ（元データとの紐付けキー）
+- **C列**: 処理ステータス（完了/エラー/処理中/テスト実行）
 
 ### 自動実行の管理
 ```javascript
@@ -51,28 +59,36 @@ testSingleRow(); // テスト実行で動作確認
 deleteTriggers();
 
 // 再開
-setupTrigger();
+setupTriggers(); // 3シート統合処理用
 ```
 
 ## 🔧 基本情報
 
-### システム構成
-- **01_お問い合わせ**: 問い合わせ自動返信システム
-- **02_単発**: 単発アンケート自動回答システム  
-- **03_WeekendEnt**: WeekendEnt自動回答システム
-- **04_Gmailラベル自動回答**: Gmail手動ラベルによるAI下書き作成システム
+### システム構成（V2.1統合版）
+- **sheets/プロジェクト**: 3シート統合処理システム
+  - WeekenDentシート（WeekendDentセミナー）
+  - その他セミナーシート
+  - お問い合わせシート
+  - AI処理管理シート（処理状況一元管理）
+- **gmail/プロジェクト**: Gmail手動ラベルによるAI下書き作成システム
 
-### 重要な関数
+### 重要な関数（V2.1統合版）
 | 関数 | 用途 |
 |---|---|
-| `setupTrigger()` | 自動実行開始 |
+| `setupTriggers()` | 自動実行開始（3シート統合） |
 | `deleteTriggers()` | 自動実行停止 |
-| `testSingleRow()` | 動作テスト（01～03用） |
-| `testSingleEmail()` | 動作テスト（04用） |
-| `processInquiries()` | 手動一括処理（01用） |
-| `processTanbatsu()` | 手動一括処理（02用） |
-| `processWeekendEnt()` | 手動一括処理（03用） |
-| `processLabeledEmails()` | 手動一括処理（04用） |
+| `checkConfig()` | 設定確認・管理シート統計表示 |
+| `showStatistics()` | 処理統計詳細表示（日常監視用） |
+| **テスト関数** | |
+| `testWeekendDent()` | WeekendDentシート1件テスト |
+| `testOtherSeminar()` | その他セミナーシート1件テスト |
+| `testInquiry()` | お問い合わせシート1件テスト |
+| **手動一括処理** | |
+| `processWeekendDent()` | WeekendDentシート処理（最大20件） |
+| `processOtherSeminar()` | その他セミナーシート処理（最大20件） |
+| `processInquiry()` | お問い合わせシート処理（最大20件） |
+| **gmail/プロジェクト** | |
+| `processLabeledEmails()` | Gmail手動ラベル処理 |
 
 ## 🚨 トラブル時の対応
 

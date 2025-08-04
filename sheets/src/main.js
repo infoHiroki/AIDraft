@@ -9,7 +9,7 @@
 
 /**
  * WeekendDentシートの処理
- * F列の質問をもとにAI回答を生成し、G列にステータス、H列に回答を出力
+ * F列の質問をもとにAI回答を生成し、Z列にステータスを記録
  */
 function processWeekendDent() {
   console.log('=== WeekendDent処理開始 ===');
@@ -25,7 +25,7 @@ function processWeekendDent() {
 
 /**
  * その他セミナーシートの処理
- * F列の質問をもとにAI回答を生成し、G列にステータス、H列に回答を出力
+ * F列の質問をもとにAI回答を生成し、Z列にステータスを記録
  */
 function processOtherSeminar() {
   console.log('=== その他セミナー処理開始 ===');
@@ -41,7 +41,7 @@ function processOtherSeminar() {
 
 /**
  * お問い合わせシートの処理
- * F列の質問をもとにAI回答を生成し、H列にステータス、I列に回答を出力
+ * F列の質問をもとにAI回答を生成し、Z列にステータスを記録
  */
 function processInquiry() {
   console.log('=== お問い合わせ処理開始 ===');
@@ -109,10 +109,10 @@ function testInquiry() {
 // ===================
 
 /**
- * 全シートの設定確認
+ * 全シートの設定確認（管理シートベース）
  */
 function checkConfig() {
-  console.log('=== 設定確認開始 ===');
+  console.log('=== 設定確認開始（管理シートベース） ===');
   
   try {
     // OpenAI APIキー確認
@@ -127,15 +127,53 @@ function checkConfig() {
     const sheetResults = SheetService.checkAllConfigs();
     console.log('シート設定:', sheetResults);
     
+    // 管理シート確認
+    const managementSheet = getManagementSheet();
+    console.log('統合管理シート:', managementSheet ? '作成済み' : '未作成');
+    
+    // 統計情報取得
+    const stats = ManagementService.getStatistics();
+    console.log('処理統計:', stats);
+    
     console.log('=== 設定確認完了 ===');
     return {
       apiKey: !!apiKey,
       gmail: gmailResult,
-      sheets: sheetResults
+      sheets: sheetResults,
+      managementSheet: !!managementSheet,
+      statistics: stats
     };
     
   } catch (error) {
     console.error('設定確認エラー:', error);
+    throw error;
+  }
+}
+
+/**
+ * 管理シート統計情報の表示
+ */
+function showStatistics() {
+  console.log('=== 処理統計情報 ===');
+  
+  try {
+    const stats = ManagementService.getStatistics();
+    
+    console.log(`総処理件数: ${stats.total}件`);
+    console.log(`完了: ${stats.completed}件`);
+    console.log(`処理中: ${stats.processing}件`);
+    console.log(`エラー: ${stats.error}件`);
+    
+    console.log('\n--- シート別統計 ---');
+    Object.keys(stats.bySheetType).forEach(sheetType => {
+      const sheetStats = stats.bySheetType[sheetType];
+      console.log(`${sheetType}: 計${sheetStats.total}件 (完了:${sheetStats.completed}, 処理中:${sheetStats.processing}, エラー:${sheetStats.error})`);
+    });
+    
+    return stats;
+    
+  } catch (error) {
+    console.error('統計情報取得エラー:', error);
     throw error;
   }
 }
@@ -199,6 +237,74 @@ function deleteTriggers() {
     console.error('トリガー削除エラー:', error);
     throw error;
   }
+}
+
+// ===================
+// データ移行関数
+// ===================
+
+/**
+ * 既存データを統合管理シートに移行
+ * 全シートの処理済みデータを管理シートに登録
+ */
+function migrateExistingData() {
+  console.log('=== 既存データ移行開始 ===');
+  
+  try {
+    const managementSheet = getManagementSheet();
+    let totalMigrated = 0;
+    
+    // 各シートの既存データを移行
+    const sheetTypes = Object.keys(SHEET_CONFIG.SHEETS);
+    
+    for (const sheetType of sheetTypes) {
+      const migrated = migrateSheetData(sheetType, managementSheet);
+      totalMigrated += migrated;
+      console.log(`${sheetType}シート移行完了: ${migrated}件`);
+    }
+    
+    console.log(`=== データ移行完了: 総計${totalMigrated}件 ===`);
+    return totalMigrated;
+    
+  } catch (error) {
+    console.error('データ移行エラー:', error);
+    throw error;
+  }
+}
+
+/**
+ * 個別シートのデータを移行
+ * @param {string} sheetType - シートタイプ
+ * @param {Sheet} managementSheet - 統合管理シート
+ * @returns {number} 移行件数
+ */
+function migrateSheetData(sheetType, managementSheet) {
+  const config = getSheetConfig(sheetType);
+  const sheet = SheetService.getSheet(SHEET_CONFIG.SPREADSHEET_ID, config.sheetName);
+  
+  const data = sheet.getDataRange().getValues();
+  let migratedCount = 0;
+  
+  // ヘッダー行をスキップして処理
+  for (let i = 1; i < data.length; i++) {
+    const row = data[i];
+    const timestamp = row[0]; // A列: タイムスタンプ
+    const statusIndex = config.statusColumn.charCodeAt(0) - 'A'.charCodeAt(0);
+    const status = row[statusIndex];
+    
+    // タイムスタンプがあり、事務局対応列に値がある場合は処理済み
+    if (timestamp && status && status.toString().trim() !== '') {
+      // 管理シートに登録
+      managementSheet.appendRow([
+        sheetType,      // A列: 種別
+        timestamp,      // B列: タイムスタンプ
+        '完了'          // C列: 処理ステータス
+      ]);
+      migratedCount++;
+    }
+  }
+  
+  return migratedCount;
 }
 
 // ===================

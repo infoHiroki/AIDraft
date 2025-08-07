@@ -166,20 +166,7 @@ class UnifiedProcessor {
     return data;
   }
   
-  /**
-   * ステータス更新
-   * @param {Sheet} sheet - スプレッドシート
-   * @param {number} rowNumber - 行番号（1から開始）
-   * @param {Object} config - シート設定
-   * @param {string} draftId - Gmail下書きID
-   * @param {string} content - AI回答またはエラー内容
-   * @param {string} status - ステータス
-   */
-  static updateStatus(sheet, rowNumber, config, draftId, content, status) {
-    // ステータス列にステータスのみ記録（約束通りI列は使わない）
-    const statusColumn = config.statusColumn;
-    sheet.getRange(statusColumn + rowNumber).setValue(status);
-  }
+  // ※ V2.1では管理シートベース処理のため、個別ステータス更新は不使用
   
   /**
    * 列文字を数値インデックスに変換

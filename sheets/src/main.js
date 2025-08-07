@@ -9,7 +9,7 @@
 
 /**
  * WeekendDentシートの処理
- * F列の質問をもとにAI回答を生成し、Z列にステータスを記録
+ * F列の質問をもとにAI回答を生成し、管理シートにステータスを記録
  */
 function processWeekendDent() {
   console.log('=== WeekendDent処理開始 ===');
@@ -25,7 +25,7 @@ function processWeekendDent() {
 
 /**
  * その他セミナーシートの処理
- * F列の質問をもとにAI回答を生成し、Z列にステータスを記録
+ * F列の質問をもとにAI回答を生成し、管理シートにステータスを記録
  */
 function processOtherSeminar() {
   console.log('=== その他セミナー処理開始 ===');
@@ -41,7 +41,7 @@ function processOtherSeminar() {
 
 /**
  * お問い合わせシートの処理
- * F列の質問をもとにAI回答を生成し、Z列にステータスを記録
+ * F列の質問をもとにAI回答を生成し、管理シートにステータスを記録
  */
 function processInquiry() {
   console.log('=== お問い合わせ処理開始 ===');
